@@ -1,0 +1,17 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* Prevents scrolling */
+}
+
+#canvas-container {
+  width: 100vw;
+  height: 100vh;
+  display: block; /* Ensures the div behaves as a block, filling the width */
+}
+
+.canvas {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
