@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import CelestialObjectMesh from '../CelestialObject/CelestialObjectMesh.jsx';
-import fetchCelestialObjects from "../../data/fetchCelestialObjects.js";
+import fetchCelestialObjects from "../../utils/fetchCelestialObjects.js";
 import OrbitLine from "../OrbitLine/OrbitLine.jsx";
 import React from 'react';
 import {useThree} from "@react-three/fiber";
@@ -10,7 +10,8 @@ const SolarSystem = () => {
     const [targetPosition, setTargetPosition] = useState([0, 0, 0]);
     const { camera, gl,scene } = useThree();
 
-    const handleDoubleClick = (celestialObject) => {
+    const handleDoubleClick = (e, celestialObject) => {
+        console.log(e)
         setTargetPosition(celestialObject.position);
     }
 
