@@ -10,7 +10,7 @@ export default function App() {
             <Canvas antialias='true' className='canvas'>
                 <ambientLight intensity={0.5}/>
                 <pointLight position={[0, 0, 0]} intensity={1} color={'#ffffff'}/>
-                <directionalLight color="white" position={[0, 0, 5]}/>
+                <directionalLight color="white" position={[0, 0, 10]}/>
 
                 <SolarSystem/>
                 <Grid color="#ffffff" colorCenterLine="red"/>

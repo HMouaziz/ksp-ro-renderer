@@ -3,10 +3,24 @@ import CelestialObjectMesh from '../CelestialObject/CelestialObjectMesh.jsx';
 import fetchCelestialObjects from "../../data/fetchCelestialObjects.js";
 import OrbitLine from "../OrbitLine/OrbitLine.jsx";
 import React from 'react';
+import {useThree} from "@react-three/fiber";
 
 const SolarSystem = () => {
     const [celestialBodies, setCelestialBodies] = useState([]);
+    const [targetPosition, setTargetPosition] = useState([0, 0, 0]);
+    const { camera, gl,scene } = useThree();
 
+    const handleDoubleClick = (celestialObject) => {
+        setTargetPosition(celestialObject.position);
+    }
+
+    useEffect(() => {
+        const [x, y, z] = targetPosition;
+        camera.lookAt(x, y, z);
+
+        gl.render(scene, camera);
+    }, [targetPosition, camera, gl, scene]);
+    
     useEffect(() => {
         const loadData = async () => {
             const data = await fetchCelestialObjects();
@@ -23,8 +37,8 @@ const SolarSystem = () => {
                 if (obj && obj.name) {
                     return (
                             <React.Fragment key={obj.name || index}>
-                                <CelestialObjectMesh key={obj.name} celestialObject={obj} />
-                                <OrbitLine points={obj.calculated.orbitPoints} color="#dddddd" />
+                                <CelestialObjectMesh key={obj.name} celestialObject={obj} onDoubleClick={handleDoubleClick}/>
+                                <OrbitLine points={obj.orbitPoints} color="#dddddd" />
                             </React.Fragment>
                         )
 

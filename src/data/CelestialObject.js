@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 class CelestialObject {
-    constructor(data, scale = 1e-6) {
+    constructor(data, scale = 1e-9) {
         if (!data || typeof data.englishName === 'undefined') {
             console.error('Attempted to create CelestialObject with invalid data:', data);
             throw new Error('Invalid data provided to CelestialObject constructor');
@@ -16,18 +16,18 @@ class CelestialObject {
 
         // Orbit parameters
         this.orbitData = {
-            semiMajorAxis: data.semimajorAxis * scale,
+            semiMajorAxis: data.semiMajorAxis * scale,
             perihelion: data.perihelion * scale,
             aphelion: data.aphelion * scale,
             eccentricity: data.eccentricity,
             inclination: data.inclination,
-            sideralOrbit: data.sideralOrbit,
-            sideralRotation: data.sideralRotation,
+            siderealOrbit: data.siderealOrbit,
+            siderealRotation: data.siderealRotation,
             meanAnomaly: data.meanAnomaly,
             argPeriapsis: data.argPeriapsis,
             longAscNode: data.longAscNode,
             axialTilt: data.axialTilt,
-            epoch: Date.now()
+            epoch: (Date.now() - Date.UTC(2000, 0, 1, 12, 0, 0)) / (1000 * 60 * 60 * 24)
         };
 
 
@@ -39,7 +39,7 @@ class CelestialObject {
             gravity: data.gravity,
             escapeVelocity: data.escape,
             meanRadius: data.meanRadius * scale,
-            equaRadius: data.equaRadius * scale,
+            equatorRadius: data.equatorRadius * scale,
             polarRadius: data.polarRadius * scale,
             flattening: data.flattening,
             avgTemp: data.avgTemp
@@ -48,19 +48,17 @@ class CelestialObject {
         this.moons = data.moons;
 
         //Calculated
-        this.calculated = {
-            size: data.meanRadius * 2  * scale,
-            meanAnomaly: this.calculateMeanAnomaly(this.orbitData.epoch),
-            trueAnomaly: this.calculateTrueAnomaly(this.orbitData.epoch),
-            position: this.calculatePosition(),
-            orbitPoints: this.calculateOrbitPoints()
-        }
+        this.size = data.isPlanet ? data.meanRadius * 2000  * scale : data.meanRadius * 50  * scale;
+        this.meanAnomaly = this.calculateMeanAnomaly(Date.now());
+        this.trueAnomaly = this.calculateTrueAnomaly(Date.now());
+        this.position = this.calculatePosition();
+        this.orbitPoints = this.calculateOrbitPoints();
+
+        console.log(this)
     }
 
     calculatePosition() {
-
-        const meanAnomaly = this.calculateMeanAnomaly(Date.now()); // This would be a method to calculate mean anomaly at the given time
-        const trueAnomaly = this.calculateTrueAnomaly(meanAnomaly, this.orbitData.eccentricity); // And another method to calculate true anomaly from mean anomaly and eccentricity
+        const trueAnomaly = this.trueAnomaly;
 
         // Simplified calculation of position in the orbital plane
         const distance = this.orbitData.semiMajorAxis * (1 - this.orbitData.eccentricity * Math.cos(trueAnomaly)); // This is a very simplified version
@@ -90,6 +88,7 @@ class CelestialObject {
             let x = radius * Math.cos(angle);
             let y = radius * Math.sin(angle);
             let z = 0;
+            // let z = radius * Math.sin(angle) * Math.sin(this.orbitData.inclination);
 
             // Apply inclination
             const inclinedY = y * Math.cos(this.orbitData.inclination) - z * Math.sin(this.orbitData.inclination);
@@ -97,26 +96,28 @@ class CelestialObject {
 
             // Create a THREE.Vector3 point and rotate it around the Z-axis by the longitude of the ascending node
             let point = new THREE.Vector3(x, inclinedY, inclinedZ);
-            const rotationMatrix = new THREE.Matrix4().makeRotationZ(THREE.MathUtils.degToRad(this.orbitData.longAscNode));
-            point.applyMatrix4(rotationMatrix);
+            // const rotationMatrix = new THREE.Matrix4().makeRotationZ(THREE.MathUtils.degToRad(this.orbitData.longAscNode));
+            // point.applyMatrix4(rotationMatrix);
 
             points.push(point);
         }
         return points;
     }
 
-    meanAnomalyInRadians(date) {
-        return (this.calculateMeanAnomaly(date) * Math.PI) / 180;
+    meanAnomalyInRadians() {
+        return (this.meanAnomaly * Math.PI) / 180;
     }
 
     calculateMeanAnomaly(date) {
-        const meanMotion = 360 / this.orbitData.sideralOrbit; // Mean motion in degrees per day
+        const meanMotion = 360 / this.orbitData.siderealOrbit; // Mean motion in degrees per day
         const deltaTime = (date - this.orbitData.epoch) / (1000 * 60 * 60 * 24); // Convert milliseconds to days
         let currentMeanAnomaly = this.orbitData.meanAnomaly + meanMotion * deltaTime;
+
 
         // Normalize the mean anomaly to the range [0, 360)
         currentMeanAnomaly = currentMeanAnomaly % 360;
         if (currentMeanAnomaly < 0) currentMeanAnomaly += 360;
+
 
         return currentMeanAnomaly;
     }
