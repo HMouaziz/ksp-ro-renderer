@@ -39,7 +39,7 @@ const SolarSystem = () => {
                     return (
                             <React.Fragment key={obj.name || index}>
                                 <CelestialObjectMesh key={obj.name} celestialObject={obj} onDoubleClick={handleDoubleClick}/>
-                                <OrbitLine points={obj.orbitPoints} color="#dddddd" />
+                                <OrbitLine points={obj.orbitPoints} color={obj.color} />
                             </React.Fragment>
                         )
 

@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 
 class CelestialObject {
-    constructor(data, scaleD = 1e-9, scaleS = 1e-6) {
+    constructor(data, scaleD = 1e-9, scaleS = 1e-5) {
         if (!data || typeof data.id === 'undefined') {
             console.error('Attempted to create CelestialObject with invalid data:', data);
             throw new Error('Invalid data provided to CelestialObject constructor');
@@ -37,10 +37,10 @@ class CelestialObject {
         this.meanAnomaly = this.calculateMeanAnomaly(this.date, this.epoch, this.siderealOrbit, this.baseMeanAnomaly);
         this.trueAnomaly = this.calculateTrueAnomaly(this.meanAnomaly, this.eccentricity);
 
-        this.position = this.calculatePosition(this.semiMajorAxis, this.eccentricity, this.inclination, this.trueAnomaly);
-        this.orbitPoints = this.calculateOrbitPoints(this.semiMajorAxis, this.eccentricity, this.inclination);
+        this.position = this.calculatePosition(this.semiMajorAxis, this.eccentricity, this.inclination, this.trueAnomaly, this.ascNodeLongitude);
+        this.orbitPoints = this.calculateOrbitPoints(this.semiMajorAxis, this.eccentricity, this.inclination, this.ascNodeLongitude);
 
-        console.log(this)
+        console.log(`${this.name} inclination: ${this.inclination}`)
     }
 
     calculateSiderealOrbit(semiMajorAxis, muSun = 1.32712440018e20) {
@@ -70,7 +70,7 @@ class CelestialObject {
         return 2451545.0;
     }
 
-    calculatePosition(semiMajorAxis, eccentricity, inclination, trueAnomaly) {
+    calculatePosition(semiMajorAxis, eccentricity, inclination, trueAnomaly, ascendingLongitude) {
         // Simplified calculation of position in the orbital plane
         const distance = semiMajorAxis * (1 - eccentricity * Math.cos(trueAnomaly));
         const x = distance * Math.cos(trueAnomaly);
@@ -82,10 +82,15 @@ class CelestialObject {
         const inclinedY = y * Math.cos(inclinationR) - z * Math.sin(inclinationR);
         const inclinedZ = y * Math.sin(inclinationR) + z * Math.cos(inclinationR);
 
-        return [x, inclinedY, inclinedZ];
+        let position = new THREE.Vector3(x, inclinedY, inclinedZ);
+
+        const rotationMatrix = new THREE.Matrix4().makeRotationZ(THREE.MathUtils.degToRad(ascendingLongitude));
+        position.applyMatrix4(rotationMatrix);
+
+        return position;
     }
 
-    calculateOrbitPoints(semiMajorAxis, eccentricity, inclination, numPoints = 100) {
+    calculateOrbitPoints(semiMajorAxis, eccentricity, inclination, ascendingLongitude, numPoints = 256) {
         const points = [];
 
         for (let i = 0; i < numPoints; i++) {
@@ -105,8 +110,8 @@ class CelestialObject {
 
             // Create a THREE.Vector3 point and rotate it around the Z-axis by the longitude of the ascending node
             let point = new THREE.Vector3(x, inclinedY, inclinedZ);
-            // const rotationMatrix = new THREE.Matrix4().makeRotationZ(THREE.MathUtils.degToRad(this.orbitData.longAscNode));
-            // point.applyMatrix4(rotationMatrix);
+            const rotationMatrix = new THREE.Matrix4().makeRotationZ(THREE.MathUtils.degToRad(ascendingLongitude));
+            point.applyMatrix4(rotationMatrix);
 
             points.push(point);
         }
