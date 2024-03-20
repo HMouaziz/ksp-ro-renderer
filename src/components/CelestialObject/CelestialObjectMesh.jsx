@@ -1,9 +1,13 @@
+// import {TextureLoader} from "three";
+// import {useLoader} from "@react-three/fiber";
 
 const CelestialObjectMesh = ({ celestialObject, onDoubleClick }) => {
     if (!celestialObject) {
         console.error("Invalid or incomplete celestialObject prop provided.");
         return null;
     }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // const texture = useLoader(TextureLoader, 'src/assets/circle-512.png');
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     // const [isHovered, setIsHovered] = useState(false);
@@ -25,7 +29,7 @@ const CelestialObjectMesh = ({ celestialObject, onDoubleClick }) => {
                   // }}
             >
                 <sphereGeometry args={[size, 32, 32]}/>
-                <meshStandardMaterial color={color} depthTest={true}/>
+                <meshStandardMaterial color={color} />
                 {/*{isHovered && (*/}
                 {/*    <Html position={[0, size * 10, 0]} transform occlude>*/}
                 {/*        <div style={{*/}
@@ -39,8 +43,8 @@ const CelestialObjectMesh = ({ celestialObject, onDoubleClick }) => {
                 {/*    </Html>*/}
                 {/*)}*/}
             </mesh>
-            {/*<sprite position={position} scale={0.2}>*/}
-            {/*    <spriteMaterial map={spriteIdleTexture} color={color}/>*/}
+            {/*<sprite position={position} scale={50}>*/}
+            {/*    <spriteMaterial map={texture} color={color}/>*/}
             {/*</sprite>*/}
         </>
     );

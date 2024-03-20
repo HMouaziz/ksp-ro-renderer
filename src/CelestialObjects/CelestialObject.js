@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 
 class CelestialObject {
-    constructor(data, scaleD = 1e-9, scaleS = 1e-7) {
+    constructor(data, scaleD = 1e-9, scaleS = 1e-9) {
         if (!data || typeof data.id === 'undefined') {
             console.error('Attempted to create CelestialObject with invalid data:', data);
             throw new Error('Invalid data provided to CelestialObject constructor');
@@ -20,7 +20,10 @@ class CelestialObject {
         this.color = data.color;
 
         this.size = this.radius * 2;
-        if (this.bodyType === 'Star') return
+        if (this.bodyType === 'Star') {
+            this.position = [0,0,0]
+            return
+        }
 
         //temp
         this.semiMajorAxis = data.orbit.semiMajorAxis * scaleD;
@@ -39,8 +42,6 @@ class CelestialObject {
 
         this.position = this.calculatePosition(this.semiMajorAxis, this.eccentricity, this.inclination, this.trueAnomaly, this.ascNodeLongitude);
         this.orbitPoints = this.calculateOrbitPoints(this.semiMajorAxis, this.eccentricity, this.inclination, this.ascNodeLongitude);
-
-        console.log(`${this.name} inclination: ${this.inclination}`)
     }
 
     calculateSiderealOrbit(semiMajorAxis, muSun = 1.32712440018e20) {

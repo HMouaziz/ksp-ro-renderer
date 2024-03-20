@@ -1,10 +1,9 @@
 import CelestialObject from "../CelestialObjects/CelestialObject.js";
 import celestialBodies from '../data/newdata.json';
 
-async function fetchCelestialObjects() {
+async function fetchDataGroups() {
     try {
-        return celestialBodies
-            .map(body => {
+        return celestialBodies.map(body => {
                 return new CelestialObject(body);
             });
     } catch (error) {
@@ -13,4 +12,4 @@ async function fetchCelestialObjects() {
     }
 }
 
-export default fetchCelestialObjects
+export default fetchDataGroups

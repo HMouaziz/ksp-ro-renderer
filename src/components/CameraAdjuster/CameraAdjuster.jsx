@@ -5,7 +5,7 @@ const CameraAdjuster = () => {
     const { camera } = useThree();
 
     useEffect(() => {
-        camera.position.set(0, 2, 0);
+        camera.position.set(-602, -2228, -2318);
         camera.near = 0.0000001; // Minimum distance
         camera.far = 1000000; // Maximum distance
         camera.fov = 75

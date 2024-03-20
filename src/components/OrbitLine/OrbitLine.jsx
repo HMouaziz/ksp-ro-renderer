@@ -14,7 +14,7 @@ const OrbitLine = ({ points, color = 'white' }) => {
 
         return () => scene.remove(orbitLine);
     }, [points, color, scene]);
-
+    console.log(points)
     return null;
 };
 

@@ -1,14 +1,15 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import CelestialObjectMesh from '../CelestialObject/CelestialObjectMesh.jsx';
-import fetchCelestialObjects from "../../utils/fetchCelestialObjects.js";
-import OrbitLine from "../OrbitLine/OrbitLine.jsx";
-import React from 'react';
+import fetchDataGroups from "../../utils/fetchDataGroups.js";
 import {useThree} from "@react-three/fiber";
+import OrbitLine from "../OrbitLine/OrbitLine.jsx";
+import {generateUUID} from "three/src/math/MathUtils.js";
+
 
 const SolarSystem = () => {
     const [celestialBodies, setCelestialBodies] = useState([]);
     const [targetPosition, setTargetPosition] = useState([0, 0, 0]);
-    const { camera, gl,scene } = useThree();
+    const {camera, gl, scene} = useThree();
 
     const handleDoubleClick = (e, celestialObject) => {
         console.log(e)
@@ -21,32 +22,54 @@ const SolarSystem = () => {
 
         gl.render(scene, camera);
     }, [targetPosition, camera, gl, scene]);
-    
+
     useEffect(() => {
         const loadData = async () => {
-            const data = await fetchCelestialObjects();
+            const data = await fetchDataGroups();
             setCelestialBodies(data);
         };
         loadData();
     }, []);
 
+    const renderCelestialBody = (celestialBody) => {
+        switch (celestialBody.bodyType) {
+            case 'Star':
+                return (
+                    <CelestialObjectMesh
+                        key={generateUUID()}
+                        celestialObject={celestialBody}
+                        onDoubleClick={handleDoubleClick}
+                    />
+                );
+            case 'Moon':
+                return (
+                    <React.Fragment key={generateUUID()}>
+                        <CelestialObjectMesh
+                            key={generateUUID()}
+                            celestialObject={celestialBody}
+                            onDoubleClick={handleDoubleClick}
+                        />
+                        <OrbitLine key={generateUUID()} points={celestialBody.orbitPoints} color={celestialBody.color}/>
+                    </React.Fragment>
+                );
+            default:
+                return (
+                    <React.Fragment key={generateUUID()}>
+                        <CelestialObjectMesh
+                            key={generateUUID()}
+                            celestialObject={celestialBody}
+                            onDoubleClick={handleDoubleClick}
+                        />
+                        <OrbitLine key={generateUUID()} points={celestialBody.orbitPoints} color={celestialBody.color}/>
+                    </React.Fragment>
+                )
+
+        }
+    };
 
     return (
         <>
-            {celestialBodies.map((obj, index) => {
-                // Ensure obj is a valid object before rendering
-                if (obj && obj.name) {
-                    return (
-                            <React.Fragment key={obj.name || index}>
-                                <CelestialObjectMesh key={obj.name} celestialObject={obj} onDoubleClick={handleDoubleClick}/>
-                                <OrbitLine points={obj.orbitPoints} color={obj.color} />
-                            </React.Fragment>
-                        )
-
-
-                }
-                return null;
-            })}
+            {celestialBodies.map(celestialBody => renderCelestialBody(celestialBody))}
         </>
     );
 };
