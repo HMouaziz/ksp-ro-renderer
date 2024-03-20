@@ -14,7 +14,7 @@ export default function App() {
 
                 <SolarSystem/>
                 <Grid color="#ffffff" colorCenterLine="red"/>
-                <OrbitControls enablePan={true}/>
+                <OrbitControls enablePan={false}/>
                 <CameraAdjuster/>
             </Canvas>
         </div>

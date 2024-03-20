@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 
 class CelestialObject {
-    constructor(data, scaleD = 1e-9, scaleS = 1e-5) {
+    constructor(data, scaleD = 1e-9, scaleS = 1e-7) {
         if (!data || typeof data.id === 'undefined') {
             console.error('Attempted to create CelestialObject with invalid data:', data);
             throw new Error('Invalid data provided to CelestialObject constructor');
@@ -72,7 +72,7 @@ class CelestialObject {
 
     calculatePosition(semiMajorAxis, eccentricity, inclination, trueAnomaly, ascendingLongitude) {
         // Simplified calculation of position in the orbital plane
-        const distance = semiMajorAxis * (1 - eccentricity * Math.cos(trueAnomaly));
+        const distance = semiMajorAxis * (1 - eccentricity ** 2) / (1 + eccentricity * Math.cos(trueAnomaly));
         const x = distance * Math.cos(trueAnomaly);
         const y = distance * Math.sin(trueAnomaly);
         const z = 0;
