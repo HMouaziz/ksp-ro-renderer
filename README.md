@@ -4,7 +4,7 @@ Welcome to the Solar System Renderer project! This repository contains a web app
 
 ## Description
 
-The Solar System Renderer application offers a detailed and interactive 3D representation of the solar system. It features accurate orbits and planetary data, allowing users to explore and learn about the celestial bodies within our solar system. This project is an enhancement of a , now with improved orbital accuracy(excepts for moons, i haven't figured out how to handle them yet).
+The Solar System Renderer application offers a detailed and interactive 3D representation of the solar system. It features accurate orbits and planetary data, allowing users to explore and learn about the celestial bodies within our solar system. This project is an enhancement of [solar-system-3d-map](https://github.com/HMouaziz/solar-system-3d-map), now with improved orbital accuracy(excepts for moons, i haven't figured out how to handle them yet).
 
 ## Installation
 
